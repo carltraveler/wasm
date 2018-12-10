@@ -1,0 +1,13 @@
+cmake -G "Unix Makefiles"  -DCMAKE_INSTALL_PREFIX=~/usr/llvm/  -DCMAKE_BUILD_TYPE=Release  -DLLVM_TARGETS_TO_BUILD="X86"  -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly
+
+
+clang    -c hello.c -o hello.wasm --target=wasm32 -nostdlib -Xlinker --no-entry -Xlinker --allow-undefined -fno-builtin -ffreestanding  -fno-threadsafe-statics  -O3
+clang    -c hello.c -o hello.wasm --target=wasm32 -nostdlib  -fno-builtin -ffreestanding  -fno-threadsafe-statics  -O3
+wasm-ld hello.wasm -o a.out --entry invoke --allow-undefined
+clang    hello.c -o hello.wasm --target=wasm32 -nostdlib -Xlinker --entry=invoke -Xlinker --allow-undefined -fno-builtin -ffreestanding  -fno-threadsafe-statics  -O3
+clang++    hello.c -o hello.wasm --target=wasm32 -nostdlib -Xlinker --entry=invoke -Xlinker --allow-undefined -fno-builtin -ffreestanding  -fno-threadsafe-statics  -O3
+cmake --build . --target install
+clang++  -c  hello.c -o hello.o  --target=wasm32 -nostdlib  -fno-builtin -ffreestanding  -fno-threadsafe-statics  -O3
+clang++  mytest.c  hello.c -o hello.wasm --target=wasm32 -nostdlib -Xlinker --entry=invoke -Xlinker --allow-undefined   -fno-builtin -ffreestanding  -fno-threadsafe-statics  -O3
+clang++  mytest.c  hello.c -o hello.wasm --target=wasm32 -nostdlib -Xlinker --entry=invoke -Xlinker --allow-undefined-file=sf   -fno-builtin -ffreestanding  -fno-threadsafe-statics  -O3
+clang   hello.c -o hello.wasm --target=wasm32 -nostdlib -Xlinker --entry=invoke -Xlinker --allow-undefined-file=sf   -fno-builtin -ffreestanding  -fno-threadsafe-statics  -O3  -nobuiltininc
