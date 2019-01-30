@@ -24,7 +24,7 @@ void* sbrk(size_t num_bytes) {
       static bool initialized;
       static uint32_t sbrk_bytes;
       if(!initialized) {
-         sbrk_bytes = __builtin_wasm_current_memory() * NBBP;
+         sbrk_bytes = __builtin_wasm_memory_size(0) * NBBP;
          initialized = true;
       }
 
@@ -33,7 +33,7 @@ void* sbrk(size_t num_bytes) {
 
       //uint32_t num_bytes = (uint32_t)num_bytesI;
       const uint32_t prev_num_bytes = sbrk_bytes;
-      const uint32_t current_pages = __builtin_wasm_current_memory();
+      const uint32_t current_pages = __builtin_wasm_memory_size(0);
 
       // round the absolute value of num_bytes to an alignment boundary
       num_bytes = (num_bytes + 7U) & ~7U;
@@ -44,8 +44,8 @@ void* sbrk(size_t num_bytes) {
       if(num_desired_pages > current_pages) {
          //unfortuately clang4 doesn't provide the return code of grow_memory, that's why need
          //to go back around and double check current_memory to make sure it has actually grown!
-         __builtin_wasm_grow_memory(num_desired_pages - current_pages);
-         if(num_desired_pages != __builtin_wasm_current_memory())
+         __builtin_wasm_memory_grow(0, num_desired_pages - current_pages);
+         if(num_desired_pages != __builtin_wasm_memory_size(0))
             return reinterpret_cast<void*>(-1);
       }
 
